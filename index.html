@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Age Calculator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+transition:.4s;
+padding:20px;
+}
+
+body.dark{
+background:#121212;
+color:white;
+}
+
+.container{
+background:white;
+width:420px;
+max-width:100%;
+padding:30px;
+border-radius:20px;
+box-shadow:0 15px 30px rgba(0,0,0,.25);
+text-align:center;
+transition:.4s;
+}
+
+body.dark .container{
+background:#1e1e1e;
+color:white;
+}
+
+h1{
+color:#007bff;
+margin-bottom:5px;
+}
+
+.subtitle{
+color:gray;
+margin-bottom:20px;
+font-size:15px;
+}
+
+.currentDate{
+font-size:14px;
+margin-bottom:15px;
+font-weight:bold;
+color:#444;
+}
+
+body.dark .currentDate{
+color:#ddd;
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:16px;
+border-radius:10px;
+border:2px solid #007bff;
+margin:15px 0;
+outline:none;
+}
+
+.buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:15px;
+cursor:pointer;
+transition:.3s;
+}
+
+.calculate{
+background:#007bff;
+color:white;
+}
+
+.calculate:hover{
+background:#0056b3;
+transform:scale(1.05);
+}
+
+.reset{
+background:#dc3545;
+color:white;
+}
+
+.reset:hover{
+background:#a71d2a;
+transform:scale(1.05);
+}
+
+.toggle{
+background:#28a745;
+color:white;
+}
+
+.toggle:hover{
+background:#1f7a34;
+transform:scale(1.05);
+}
+
+.error{
+color:red;
+margin-top:15px;
+font-weight:bold;
+}
+
+.result{
+margin-top:20px;
+display:none;
+background:#f7f7f7;
+padding:20px;
+border-radius:15px;
+animation:fade .5s;
+}
+
+body.dark .result{
+background:#333;
+}
+
+.result h2{
+margin-bottom:10px;
+color:#007bff;
+}
+
+.result p{
+margin:6px 0;
+font-size:16px;
+}
+
+footer{
+margin-top:20px;
+font-size:13px;
+color:gray;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+@media(max-width:500px){
+.container{
+padding:20px;
+}
+.buttons{
+flex-direction:column;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎂 Age Calculator</h1>
+
+<p class="subtitle">
+Calculate your exact age using HTML, CSS & JavaScript
+</p>
+
+<div class="currentDate" id="today"></div>
+
+<input type="date" id="dob">
+
+<div class="buttons">
+
+<button class="calculate" onclick="calculateAge()">
+Calculate Age
+</button>
+
+<button class="reset" onclick="resetAll()">
+Reset
+</button>
+
+<button class="toggle" onclick="darkMode()">
+🌙 Dark Mode
+</button>
+
+</div>
+
+<div class="error" id="error"></div>
+
+<div class="result" id="result">
+
+<h2>Your Age</h2>
+
+<p><b>Years :</b> <span id="years"></span></p>
+<p><b>Months :</b> <span id="months"></span></p>
+<p><b>Days :</b> <span id="days"></span></p>
+
+<hr style="margin:15px 0">
+
+<p>Total Months : <span id="totalMonths"></span></p>
+<p>Total Weeks : <span id="totalWeeks"></span></p>
+<p>Total Days : <span id="totalDays"></span></p>
+<p>Total Hours : <span id="totalHours"></span></p>
+<p>Total Minutes : <span id="totalMinutes"></span></p>
+<p>Total Seconds : <span id="totalSeconds"></span></p>
+
+</div>
+
+<footer>
+Made with ❤️ using HTML, CSS & JavaScript
+</footer>
+
+</div>
+
+<script>
+
+let interval;
+
+function showToday(){
+
+let today=new Date();
+
+document.getElementById("today").innerHTML=
+"Today's Date : "+today.toDateString();
+
+}
+
+showToday();
+
+function calculateAge(){
+
+clearInterval(interval);
+
+let dob=document.getElementById("dob").value;
+
+let error=document.getElementById("error");
+
+let result=document.getElementById("result");
+
+error.innerHTML="";
+
+if(dob==""){
+error.innerHTML="⚠ Please select your Date of Birth.";
+result.style.display="none";
+return;
+}
+
+let birth=new Date(dob);
+
+let today=new Date();
+
+if(birth>today){
+error.innerHTML="⚠ Date of Birth cannot be in the future.";
+result.style.display="none";
+return;
+}
+
+function update(){
+
+let now=new Date();
+
+let years=now.getFullYear()-birth.getFullYear();
+
+let months=now.getMonth()-birth.getMonth();
+
+let days=now.getDate()-birth.getDate();
+
+if(days<0){
+
+months--;
+
+let prevMonth=new Date(now.getFullYear(),now.getMonth(),0);
+
+days+=prevMonth.getDate();
+
+}
+
+if(months<0){
+
+years--;
+
+months+=12;
+
+}
+
+let diff=now-birth;
+
+let totalSeconds=Math.floor(diff/1000);
+
+let totalMinutes=Math.floor(totalSeconds/60);
+
+let totalHours=Math.floor(totalMinutes/60);
+
+let totalDays=Math.floor(totalHours/24);
+
+let totalWeeks=Math.floor(totalDays/7);
+
+let totalMonths=years*12+months;
+
+document.getElementById("years").innerHTML=years;
+document.getElementById("months").innerHTML=months;
+document.getElementById("days").innerHTML=days;
+
+document.getElementById("totalMonths").innerHTML=totalMonths;
+document.getElementById("totalWeeks").innerHTML=totalWeeks;
+document.getElementById("totalDays").innerHTML=totalDays;
+document.getElementById("totalHours").innerHTML=totalHours;
+document.getElementById("totalMinutes").innerHTML=totalMinutes;
+document.getElementById("totalSeconds").innerHTML=totalSeconds;
+
+result.style.display="block";
+
+}
+
+update();
+
+interval=setInterval(update,1000);
+
+}
+
+function resetAll(){
+
+clearInterval(interval);
+
+document.getElementById("dob").value="";
+
+document.getElementById("result").style.display="none";
+
+document.getElementById("error").innerHTML="";
+
+}
+
+function darkMode(){
+
+document.body.classList.toggle("dark");
+
+}
+
+</script>
+
+</body>
+</html>
